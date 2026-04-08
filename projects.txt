@@ -1,0 +1,162 @@
+========================================================
+MY PROJECTS
+Last Updated: April 2026
+========================================================
+
+
+--------------------------------------------------------
+PROJECT 1: CHARCHA
+--------------------------------------------------------
+
+WHAT IT IS:
+A visual podcast experience for users. When a video podcast
+is playing and the host/guest discuss a topic, the app
+automatically shows relevant articles, news, blog posts,
+and research papers in an interactive way. Users can
+explore the linked content without losing their place in
+the podcast.
+
+STATUS: In Progress (MVP stage)
+
+TECH STACK:
+- Frontend: HTML, CSS, JavaScript
+- Backend: Node.js / Express
+- Database: Local
+- AI/ML: Ollama (Llama 3.2 local), Whisper (local transcription), spaCy NER
+- APIs: YouTube Data API v3, Podcast Index API, Serper (article search),
+         AssemblyAI (transcription fallback), Groq
+- Hosting: Local (ngrok for sharing)
+- Version Control: GitHub (private repo: aguttedar/Charcha)
+
+CORE FEATURES BUILT:
+- Homepage with cinematic Devanagari intro animation
+  (च zooms in, zooms out, "Charcha" fades in, moves to top)
+- Apple-style smooth scroll with 3 sections:
+    Section 1 - Hero: "Podcast, deeply Understood"
+    Section 2 - Why Charcha (with Hindi meaning of the word)
+    Section 3 - Start Listening (URL input + Library/Login)
+- Podcast Library page (YouTube trending/search)
+- Player page with 2 modes:
+    Static Mode  - Article panel on the right side
+    Interactive  - Bubbles around the video (planned)
+- Custom YouTube embed player
+- Resizable article sidebar
+- Progressive article loading (first 5 min fast, rest in background)
+- Caching for YouTube API quota management
+
+BOTTLENECKS FACED:
+
+1. ARTICLE RELEVANCE (Major)
+   Articles being shown had nothing to do with the video.
+   Example: Watching an Ali Abdaal wealth video, app showed
+   "Using Easy Mode on my Galaxy phone". Root cause: keywords
+   extracted without video context. Fix: Added video title/theme
+   as context to every Serper search query + exclusion terms.
+
+2. TIMESTAMP ACCURACY
+   Articles were showing wrong timestamps - not matching when
+   the topic was actually discussed in the video. Root cause:
+   Ollama extracted topics but didn't link them to actual
+   transcript timestamps. Fix: Chunked processing - split
+   transcript into 5-min chunks, each chunk's topics inherit
+   that chunk's start timestamp.
+
+3. ONLY PROCESSING FIRST 2 MINUTES
+   Backend was only transcribing/analyzing the beginning of
+   the video. All articles had early timestamps. Fix: Full
+   progressive chunked processing across the entire video.
+
+4. USER WAIT TIME
+   Processing a full 200-min podcast takes 15-30 min. Users
+   can't wait. Fix: Process first 5 min immediately (articles
+   appear in ~30 sec), then silently process the rest in
+   background chunks.
+
+5. DUPLICATE ARTICLES
+   Same article or same topic appearing multiple times.
+   Fix: Deduplication logic - filter same URLs, compare title
+   similarity (>80% match = remove duplicate), max 2 articles
+   per topic.
+
+6. LOW QUALITY ARTICLE SOURCES
+   Too many Wikipedia and Reddit results, not enough quality
+   content. Fix: Source tier system:
+     Tier 1 (Priority): NYT, WSJ, TechCrunch, Forbes, Medium,
+                        Substack, HBR, arXiv, Bloomberg, Wired
+     Tier 2 (Allowed): Wikipedia (last resort)
+     Tier 3 (Blocked): Reddit, Quora, Pinterest, Facebook
+
+7. YOUTUBE API QUOTA EXCEEDED
+   Hit the 10,000 units/day free limit during development.
+   Fix: Created a new API key + added server-side caching
+   (search results: 1hr, video details: 24hr, trending: 2hr).
+
+8. YOUTUBE PLAYER AESTHETICS
+   The default YouTube embedded player didn't match the
+   Charcha dark aesthetic. Fix: Built a custom player wrapper
+   using YouTube IFrame API with custom HTML/CSS controls
+   (play/pause, progress bar, volume, speed, fullscreen).
+
+9. INTRO ANIMATION ALIGNMENT ON MOBILE
+   The Devanagari character च was appearing off-center on
+   mobile devices during the zoom animation, and was vibrating
+   on refresh. Fix: Switched from font-size scaling to CSS
+   transform: scale() which avoids layout shifts.
+
+10. HEADER OVERLAPPING CONTENT ON SCROLL
+    The "च Charcha" logo was scrolling down the page and
+    overlapping with hero text instead of staying fixed.
+    Fix: position: fixed, z-index: 1000, opacity controlled
+    via Intersection Observer (visible on sections 1 & 3,
+    hidden on section 2).
+
+11. STICKY HEADER TRANSITION WAS JUMPY
+    On the Library page, switching from full header to sticky
+    header during scroll felt jarring. Fix: CSS transitions
+    on all changing properties (opacity + transform), using
+    translateY instead of position jumps.
+
+12. BACKGROUND IMAGE STRETCHING
+    Background image distorted on wide/fullscreen browser.
+    Fix: background-size: cover + background-position: center.
+
+13. CLAUDE CODE NOT FOUND AFTER MAC RESTART
+    After restarting Mac, terminal couldn't find the `claude`
+    command even though it was installed. Root cause: PATH
+    not loaded. Fix: source ~/.bash_profile (or reinstall).
+
+14. AUDIO DOWNLOAD FROM YOUTUBE BLOCKED
+    Backend tried to download audio directly from YouTube URL
+    which YouTube blocks. Fix: Used yt-dlp to extract the
+    audio stream URL first, then passed it to AssemblyAI.
+
+15. ARTICLE CLICK OPENING EXTERNAL LINK INSTEAD OF TIMESTAMP
+    Clicking an article card was opening the URL instead of
+    jumping the video to the relevant timestamp. Fix: Main
+    card click = seekTo(timestamp - 2 seconds), small arrow
+    button (↗) in top-right corner = open external link.
+    The -2 seconds offset ensures user hears lead-up to topic.
+
+OPEN ITEMS / PLANNED:
+- Interactive Mode (article bubbles around video)
+- Semantic search implementation
+- User authentication (Login)
+- Save favorites + watch history
+- Sonar API (Perplexity) for smarter article search
+- Twitter/X article links
+- Captions button for the player
+- Request YouTube API quota increase before public launch
+- Mobile app (iOS) - future phase
+- Deploy publicly (Vercel or Railway)
+
+DESIGN PHILOSOPHY:
+- Dark background, white text (calm, soothing aesthetic)
+- Perplexity-inspired typography
+- Sunset/warm background image with golden accent colors
+- Devanagari script in logo: "च Charcha"
+  ("Charcha" means "discussion" in Hindi)
+
+
+========================================================
+MORE PROJECTS COMING SOON...
+========================================================
